@@ -29,8 +29,8 @@ public class AutoDisconnect implements ModInitializer, Global {
 		Version.checkUpdates();
 		ImproperUIAPI.init(modId, AutoDisconnect.class, screens);
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			AutoDis AD = new AutoDis();
-			Config.loadConfig();
+			AutoDis autoDis = new AutoDis();
+			Config config = new Config();
 			while (BIND.wasPressed()) {
 				ImproperUIAPI.parseAndRunFile(modId, "screen.ui");
 			}
