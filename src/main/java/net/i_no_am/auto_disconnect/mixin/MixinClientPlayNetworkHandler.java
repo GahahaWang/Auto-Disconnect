@@ -3,7 +3,7 @@ package net.i_no_am.auto_disconnect.mixin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.i_no_am.auto_disconnect.AutoDisconnect;
 import net.i_no_am.auto_disconnect.Global;
-import net.i_no_am.auto_disconnect.utils.PlayerUtils;
+import net.i_no_am.auto_disconnect.utils.Utils;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.text.ClickEvent;
@@ -23,7 +23,7 @@ public class MixinClientPlayNetworkHandler implements Global {
     @Inject(method = "onGameJoin", at = @At("RETURN"))
     private void onInit(GameJoinS2CPacket packet, CallbackInfo ci) {
         if (!sent && AutoDisconnect.isOutdated && !FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            PlayerUtils.player().sendMessage(
+            Utils.player().sendMessage(
                     Text.of("")
                             .copy().append(Text.literal("You are using an outdated version of ").formatted(Formatting.RED))
                             .append(Text.literal(AutoDisconnect.PREFIX).formatted(Formatting.RED, Formatting.BOLD))

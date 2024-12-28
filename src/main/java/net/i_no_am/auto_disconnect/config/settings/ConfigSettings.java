@@ -2,13 +2,10 @@ package net.i_no_am.auto_disconnect.config.settings;
 
 import net.i_no_am.auto_disconnect.config.Config;
 
-@SuppressWarnings("unused")
 public class ConfigSettings<T> {
     private final T value;
-    private final Class<T> type;
 
-    public ConfigSettings(Class<T> type, T value) {
-        this.type = type;
+    public ConfigSettings(T value) {
         this.value = value;
     }
 
@@ -20,7 +17,4 @@ public class ConfigSettings<T> {
         Config.ADconfig.write(name,value);
     }
 
-    public Class<T> getType() {
-        return type;
-    }
 }

@@ -12,7 +12,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
-@SuppressWarnings("unused")
 public class AutoDisconnect implements ModInitializer, Global {
 
 	public static boolean isOutdated = false;
@@ -26,11 +25,12 @@ public class AutoDisconnect implements ModInitializer, Global {
 
 	@Override
 	public void onInitialize() {
+//		TODO FIX THE WHOLE MOD :(
 		Version.checkUpdates();
 		ImproperUIAPI.init(modId, AutoDisconnect.class, screens);
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			AutoDis autoDis = new AutoDis();
-			Config config = new Config();
+			Config.loadConfig();
+			AutoDis.init();
 			while (BIND.wasPressed()) {
 				ImproperUIAPI.parseAndRunFile(modId, "screen.ui");
 			}

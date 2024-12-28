@@ -2,73 +2,98 @@ package net.i_no_am.auto_disconnect.impl;
 
 import net.i_no_am.auto_disconnect.Global;
 import net.i_no_am.auto_disconnect.config.Config;
-import net.i_no_am.auto_disconnect.utils.NetworkUtils;
-import net.i_no_am.auto_disconnect.utils.PlayerUtils;
+import net.i_no_am.auto_disconnect.utils.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.RespawnAnchorBlock;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+
 import java.util.List;
 
 public class AutoDis implements Global {
 
-    public AutoDis() {
-        if (PlayerUtils.invalid()) return;
-        List<Integer> rangeList = PlayerUtils.getRangeList(Config.range.getVal());
-            /*A check if the mod is actually enabled*/
-        if (Config.enable.getVal()) {
-            /*Player Health -> Still in progress*/
-            if (Config.checkPlayerHealth.getVal() && PlayerUtils.player().isAlive()) {
-                float healthThreshold = (Config.selfPlayerHealth.getVal() / 100.0f) * PlayerUtils.player().getMaxHealth();
-                if (PlayerUtils.player().getHealth() < healthThreshold) {
-                    NetworkUtils.disconnectPlayer(String.format("Player health is below %d%%", Config.selfPlayerHealth.getVal()));
-                    return;
+    public static int RANGE = Config.range.getVal();
+    public final static DisconnectInfo NULL = new DisconnectInfo(false, null);
+
+    public static void init() {
+        if (!isEnable()) return;
+        BlockPos playerPos = Utils.player().getBlockPos();
+        for (int x = -RANGE; x <= RANGE; x++) {
+            for (int y = -RANGE; y <= RANGE; y++) {
+                for (int z = -RANGE; z <= RANGE; z++) {
+                    BlockPos targetPos = playerPos.add(x, y, z);
+                    BlockState blockState = Utils.player().getWorld().getBlockState(targetPos);
+                    List<DisconnectInfo> logics = List.of(checkAnchor(blockState, playerPos), checkCrystals(playerPos), checkPlayers(), checkPlayers(), checkPlayers(), checkHealth());
+                    disconnect(logics);
                 }
             }
-            /*Check Anchors -> Check For Anchors In range*/
-            if (Config.checkAnchors.getVal()) {
-                for (Integer r : rangeList) {
-                    BlockPos anchorPos = PlayerUtils.getNearestBlock(r, state -> {
-                        if (state.getBlock() == Blocks.RESPAWN_ANCHOR) {
-            /*Check Glowstone -> Check For Anchors with glowstone inside them In range*/
-                            if (Config.checkGlowstone.getVal()) {
-                                BlockState blockState = state.getBlock().getStateWithProperties(state);
-                                int charges = blockState.get(RespawnAnchorBlock.CHARGES);
-                                return charges > 0;
-                            } else {
-                                return true;
-                            }
-                        }
-                        return false;
-                    });
-                    if (anchorPos != null) {
-                        NetworkUtils.disconnectPlayer("Respawn Anchor is in range");
-                        return;
-                    }
-                }
+        }
+    }
+
+
+    private static void disconnect(List<DisconnectInfo> logics) {
+        for (DisconnectInfo logic : logics) {
+            if (logic != null && logic.state)
+                Utils.disconnectPlayer(logic.message);
+        }
+    }
+
+    private static boolean isEnable() {
+        return Config.enable.getVal() && !Utils.playerInvalid();
+    }
+
+    private static DisconnectInfo checkHealth() {
+        if (Config.checkPlayerHealth.getVal() && Utils.player().isAlive()) {
+            float healthThreshold = (Config.selfPlayerHealth.getVal() / 100.0f) * Utils.player().getMaxHealth();
+            if (Utils.player().getHealth() < healthThreshold) {
+                String message = "Player health is below " + Config.selfPlayerHealth.getVal() + "%";
+                return new DisconnectInfo(true, message);
             }
-            /*Check Crystals -> Check For End Crystals Entities In range*/
-            if (Config.checkCrystals.getVal()) {
-                for (Integer r : rangeList) {
-                    Entity crystal = PlayerUtils.getNearestEntity(r, entity -> entity instanceof EndCrystalEntity);
-                    if (crystal != null) {
-                        NetworkUtils.disconnectPlayer("End Crystal is in range");
-                        return;
-                    }
-                }
-            }
-            /*Check New Players -> Check For New Players In range, Still in progress*/
-            if (Config.checkNewPlayers.getVal()) {
-                for (PlayerEntity player : PlayerUtils.getWorld().getPlayers()) {
-                    if (PlayerUtils.player().squaredDistanceTo(player) <= mc.options.getViewDistance().getValue() * 16 * mc.options.getViewDistance().getValue() * 16) {
-                        NetworkUtils.disconnectPlayer("New player detected within render distance");
-                        return;
+        }
+        return NULL;
+    }
+
+    private static DisconnectInfo checkCrystals(BlockPos pos) {
+        if (Config.checkCrystals.getVal()) {
+            for (Entity entity : mc.world.getEntities()) {
+                if (entity instanceof EndCrystalEntity crystal) {
+                    if (crystal.getBlockPos().equals(pos)) {
+                        return new DisconnectInfo(true, "End Crystal is in range");
                     }
                 }
             }
         }
+        return NULL;
+    }
+
+    private static DisconnectInfo checkPlayers() {
+        if (Config.checkNewPlayers.getVal() && !(Utils.player().networkHandler.getPlayerList().size() == 1)) {
+            for (Entity ent : mc.world.getEntities()) {
+                if (!(ent instanceof ClientPlayerEntity) && ent instanceof PlayerEntity) {
+                    return new DisconnectInfo(true, "New player detected within render distance");
+                }
+            }
+        }
+        return NULL;
+    }
+
+    private static DisconnectInfo checkAnchor(BlockState state, BlockPos pos) {
+        if (Config.checkAnchors.getVal() && state.getBlock() == Blocks.RESPAWN_ANCHOR) {
+            if (Config.checkGlowstone.getVal()) {
+                for (int i = 1; i <= 4; i++) {
+                    if (Utils.anchorWithCharges(i, pos)) {
+                        return new DisconnectInfo(true, "Respawn Anchor is in range and loaded");
+                    }
+                }
+            }
+            return new DisconnectInfo(true, "Respawn Anchor is in range");
+        }
+        return NULL;
+    }
+
+    record DisconnectInfo(boolean state, String message) {
     }
 }
