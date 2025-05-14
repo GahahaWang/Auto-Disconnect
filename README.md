@@ -2,7 +2,7 @@
 -----------------
 ```yml
 How to use?
-# Install the mod latest version and install midnightLib Library.
+# Install the mod latest version and install midnightLib.
 # Press the keybind K on your keyboard to open the GUI.
 # Set the conditions for the auto disconnect.
 # Turn on/off the settings as you want.
@@ -24,7 +24,7 @@ How to use?
 ![Demonstration](assets/example.png)
 -----------------
 
-**BE AWARE THAT YOU MUST TO DOWNLOAD THE [**IMPROPER-UI**](https://github.com/ItziSpyder/ImproperUI/releases) LIBRARY IN ORDER TO THE MOD TO WORK!**
+**BE AWARE THAT YOU MUST TO DOWNLOAD THE [**Midnight-LIB**](https://modrinth.com/mod/midnightlib) LIBRARY IN ORDER TO THE MOD TO WORK!**
 
 ------------------
 **tysm for using this mod** 🙏
