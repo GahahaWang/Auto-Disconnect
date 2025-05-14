@@ -2,7 +2,7 @@
 -----------------
 ```yml
 How to use?
-# Install the latest version and install ImproperUI Library.
+# Install the mod latest version and install midnightLib Library.
 # Press the keybind K on your keyboard to open the GUI.
 # Set the conditions for the auto disconnect.
 # Turn on/off the settings as you want.
@@ -10,7 +10,12 @@ How to use?
 -----------------------------------
 ## Showcase:
 ### GUI
+- ***First Page:***
 ![GUI showcase](assets/gui.png)
+- ***Second Page:***
+![GUI1 showcase](assets/gui1.png)
+- ***Third Page:***
+![GUI2 showcase](assets/gui2.png)
 ----------
 ### Setting The Keybind
 ![keybind fot opening the GUI](assets/key.png)

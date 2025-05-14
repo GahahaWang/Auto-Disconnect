@@ -27,12 +27,12 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	// "Getting" the ImproperUi Library from the Modrinth api
-	modImplementation "maven.modrinth:improperui:${project.improperui_version}"
+	// "Getting" the MidnightLib Library from the Modrinth api
+	modImplementation include ("maven.modrinth:midnightlib:${project.midnightlib_version}")
 }
 
 processResources {
-	inputs.property "improperui_version", project.improperui_version
+	inputs.property "midnightlib_version", project.midnightlib_version
 	inputs.property "version", project.version
 	inputs.property "minecraft_version", project.minecraft_version
 	inputs.property "loader_version", project.loader_version
@@ -42,7 +42,7 @@ processResources {
 		expand "version": project.version,
 				"minecraft_version": project.minecraft_version,
 				"loader_version": project.loader_version,
-				"improperui_version": project.improperui_version
+				"midnightlib_version": project.midnightlib_version
 	}
 }
 

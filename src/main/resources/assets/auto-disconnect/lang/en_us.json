@@ -1,4 +1,8 @@
 {
   "auto-disconnect.i_no_am.category": "Auto Disconnect",
-  "auto-disconnect.i_no_am.menu": "Open Menu"
+  "auto-disconnect.i_no_am.menu": "Open Menu",
+  "auto-disconnect.midnightconfig.title": "Auto Disconnect",
+  "auto-disconnect.midnightconfig.category.GENERAL": "General Settings",
+  "auto-disconnect.midnightconfig.category.PLAYERS": "Players Conditions",
+  "auto-disconnect.midnightconfig.category.PVP": "PVP Conditions"
 }

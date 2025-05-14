@@ -1,42 +1,76 @@
 package net.i_no_am.auto_disconnect.mixin;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.i_no_am.auto_disconnect.AutoDisconnect;
+import com.mojang.authlib.GameProfile;
 import net.i_no_am.auto_disconnect.Global;
+import net.i_no_am.auto_disconnect.config.Config;
 import net.i_no_am.auto_disconnect.utils.Utils;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.entity.EntityType;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 @Mixin(ClientPlayNetworkHandler.class)
-public class MixinClientPlayNetworkHandler implements Global {
+public abstract class MixinClientPlayNetworkHandler implements Global {
 
-   @Unique private boolean sent = false;
+    @Unique private final Set<UUID> knownPlayerIds = new HashSet<>();
 
-    @Inject(method = "onGameJoin", at = @At("RETURN"))
-    private void onInit(GameJoinS2CPacket packet, CallbackInfo ci) {
-        if (!sent && AutoDisconnect.isOutdated && !FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            Utils.player().sendMessage(
-                    Text.of("")
-                            .copy().append(Text.literal("You are using an outdated version of ").formatted(Formatting.RED))
-                            .append(Text.literal(AutoDisconnect.PREFIX).formatted(Formatting.RED, Formatting.BOLD))
-                            .append(Text.literal(". Please download the latest version from "))
-                            .append(Text.literal("Modrinth").styled(style ->
-                                    style.withColor(Formatting.GREEN)
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/auto-disconnect/versions"))
-                                            .withUnderline(true)
-                            ))
-                            .append(Text.literal("."))
-                    , false
-            );
-            sent = true;
+    @Inject(method = "onPlayerList", at = @At("TAIL"))
+    private void onListUpdate(PlayerListS2CPacket packet, CallbackInfo ci) {
+        if (!Config.enable) return;
+
+        for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
+            GameProfile profile = entry.profile();
+            if (profile == null) continue;
+            UUID uuid = profile.getId();
+
+            // Skip self
+            if (mc.player != null && uuid.equals(mc.player.getUuid())) continue;
+
+            String playerName = profile.getName();
+
+            if (Config.checkNewPlayers && !knownPlayerIds.contains(uuid)) {
+                knownPlayerIds.add(uuid);
+                Utils.disconnect("New player joined: " + playerName);
+                return;
+            }
+
+            if (Utils.isPlayerInList(playerName)) {
+                Utils.disconnect("Blocked player joined: " + playerName);
+                return;
+            }
+
+            knownPlayerIds.add(uuid);
+        }
+    }
+
+    @Inject(method = "onGameJoin", at = @At("TAIL"))
+    private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
+        knownPlayerIds.clear();
+    }
+
+    @Inject(method = "tick", at = @At("RETURN"))
+    private void onTick(CallbackInfo ci) {
+
+        if (Utils.isInvalid() || !Config.enable || !Config.checkPlayersInRenderDistance) return;
+
+        Vec3d selfPos = mc.player.getPos();
+        double rangeSquared = Config.range * Config.range;
+
+        var player = Utils.findEntity(EntityType.PLAYER, Config.range);
+        double distSq = player != mc.player ? player.getPos().squaredDistanceTo(selfPos) : Double.MAX_VALUE;
+
+        if (distSq <= rangeSquared) {
+            Utils.disconnect("Player in render range");
         }
     }
 }
