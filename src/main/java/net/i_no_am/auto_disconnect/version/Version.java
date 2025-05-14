@@ -57,7 +57,7 @@ public class Version implements Global {
                     mc.player.closeScreen();
                 }
                 mc.player.closeScreen();
-            }, Text.of(Formatting.RED + "You are using an outdated version of View Model"), Text.of("Please download the latest version from " + Formatting.GREEN + "Modrinth"), Text.of("Download"), Text.of("Continue playing")));
+            }, Text.of(Formatting.RED + "You are using an outdated version of Auto Disconnect"), Text.of("Please download the latest version from " + Formatting.GREEN + "Modrinth"), Text.of("Download"), Text.of("Continue playing")));
             bl = true;
         }
     }
