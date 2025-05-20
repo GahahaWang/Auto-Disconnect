@@ -17,7 +17,7 @@ public class Config extends MidnightConfig implements Global {
     @Entry(category = "GENERAL", name = "Detection Range", isSlider = true, min = 0, max = 400, precision = 1)
     public static int range = 5;
 
-    @Condition(requiredModId = "isTHisEverGonnnABeNoticeBySomeonE")
+    @Hidden
     @Entry(category = "GENERAL", name = "Dummy Setting, IGNORE!!!")
     public static boolean shouldCheck = true;
 
