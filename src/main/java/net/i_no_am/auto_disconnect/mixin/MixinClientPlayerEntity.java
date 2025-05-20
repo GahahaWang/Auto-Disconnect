@@ -30,7 +30,7 @@ public class MixinClientPlayerEntity implements Global {
 
         if (!(Config.checkAnchors || Config.checkGlowstone)) return;
 
-        BlockPos anchorPos = Utils.findBlock(Blocks.RESPAWN_ANCHOR, Config.range);
+        BlockPos anchorPos = Utils.findBlockPos(Blocks.RESPAWN_ANCHOR, Config.range);
         if (anchorPos == null) return;
 
         if (Config.checkGlowstone && Utils.isAnchorLoaded(Config.glowstone_num, anchorPos))

@@ -89,7 +89,7 @@ public class Utils implements Global {
     /**
      * Finds a block of the specified type within a certain range from the player.
      */
-    public static BlockPos findBlock(Block block, int range) {
+    public static BlockPos findBlockPos(Block block, int range) {
         for (BlockPos pos : getBlocksInRange(range)) {
             if (mc.world.getBlockState(pos).getBlock() == block) return pos;
         }
