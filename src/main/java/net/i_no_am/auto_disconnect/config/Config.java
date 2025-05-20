@@ -21,13 +21,13 @@ public class Config extends MidnightConfig implements Global {
     public static boolean shouldCheck = true;
 
     @Entry(category = "PLAYERS", name = "Check Player Health")
-    public static boolean checkPlayerHealth = true;
+    public static boolean checkPlayerHealth = false;
 
     @Entry(category = "PLAYERS", name = "Minimum Health to Disconnect", isSlider = true, min = 1, max = 20)
     public static int selfPlayerHealth = 2;
 
     @Entry(category = "PLAYERS", name = "Detect Players in Render Distance")
-    public static boolean checkPlayersInRenderDistance = true;
+    public static boolean checkPlayersInRenderDistance = false;
 
     @Entry(category = "PLAYERS", name = "Check for new online players")
     public static boolean checkNewPlayers = false;
@@ -39,13 +39,13 @@ public class Config extends MidnightConfig implements Global {
     public static List<String> playersName = new ArrayList<>();
 
     @Entry(category = "PVP", name = "Check for End Crystals in render distance")
-    public static boolean checkCrystals = true;
+    public static boolean checkCrystals = false;
 
     @Entry(category = "PVP", name = "Check for Respawn Anchors in render distance")
-    public static boolean checkAnchors = true;
+    public static boolean checkAnchors = false;
 
     @Entry(category = "PVP", name = "Check for Glowstone")
-    public static boolean checkGlowstone = true;
+    public static boolean checkGlowstone = false;
 
     @Entry(category = "PVP", name = "The number of loaded glowstones in anchor", isSlider = true, min = 1, max = 4)
     public static int glowstone_num = 1;
