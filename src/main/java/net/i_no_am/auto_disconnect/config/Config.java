@@ -17,7 +17,8 @@ public class Config extends MidnightConfig implements Global {
     @Entry(category = "GENERAL", name = "Detection Range", isSlider = true, min = 0, max = 400, precision = 1)
     public static int range = 5;
 
-    @Entry(category = "GENERAL", name = "Dummy Setting, IGNORE!!!", requiredMod = "isTHisEverGonnnABeNoticeBySomeonE")
+    @Condition(requiredModId = "isTHisEverGonnnABeNoticeBySomeonE")
+    @Entry(category = "GENERAL", name = "Dummy Setting, IGNORE!!!")
     public static boolean shouldCheck = true;
 
     @Entry(category = "PLAYERS", name = "Check Player Health")
